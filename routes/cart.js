@@ -12,7 +12,7 @@ router.get("/cart/new/:id/:return",inCart,function(req,res){
 	Product.findById(req.params.id,function(err,product){
 		if(err || !product) {
 			req.flash("error","Product not found!!");
-			res.redirect("/products");
+			res.redirect("/home");
 		} else {
 			req.user.cart.cart_total+=product.mrp;
 			req.user.cart.discount+=product.discount;
@@ -24,7 +24,7 @@ router.get("/cart/new/:id/:return",inCart,function(req,res){
 	if(req.params.return=="show") {
 		res.redirect("/products/" + req.params.id);
 	} else {
-		res.redirect("/products");
+		res.redirect("/home");
 	}
 });
 
@@ -32,7 +32,7 @@ router.get("/cart",isLoggedIn,function(req,res){
 	User.findById(req.user._id).populate("cart.items.product").exec(function(err,user){
 		if(err || !user) {
 			req.flash("error","Something went wrong!!");
-			res.redirect("/products");
+			res.redirect("/home");
 		} else {
 			res.render("cart/show",{user: user});
 		}
@@ -43,7 +43,7 @@ router.get("/cart/:id/:action",isLoggedIn,function(req,res){
 	User.findById(req.user._id).populate("cart.items.product").exec(function(err,user){
 		if(err || !user) {
 			req.flash("error","Something went wrong!!");
-			res.redirect("/products");
+			res.redirect("/home");
 		} else {
 			for(var i = user.cart.items.length - 1; i >= 0; i--) {
 				var cartItem = user.cart.items[i];
@@ -85,7 +85,7 @@ function inCart(req,res,next) {
 			return cartItem.product._id.equals(req.params.id);
 		})) {
 			req.flash("error","This product is already present in your cart!!");
-			res.redirect("/products");
+			res.redirect("/home");
 		} else {
 			next();
 		}
